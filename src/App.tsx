@@ -1,35 +1,34 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import './App.css';
+import BasicInput from './BasicInput.tsx';
+import { Calendar } from './Calendar.tsx';
+import { Answer } from './Answer.tsx';
+import { useRef, useState } from 'react';
+import solvers from './Solvers.ts';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [selectedDay, setSelectedDay] = useState(0);
+  const [output, setOutput] = useState('');
 
+  const inputRef = useRef<HTMLInputElement>(null);
+  const handleDayChange = (day: number) => {
+    setSelectedDay(day);
+    solve(day);
+  };
+  const solve = (day: number) => {
+    const solver = solvers[day] ?? solvers[0];
+    const input = inputRef.current?.value;
+    setOutput(input ? solver(input) : 'No Input');
+  };
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <h1>Advent of Code 2023</h1>
+      <div className="app">
+        <Calendar selectedDay={selectedDay} handleChange={handleDayChange} />
+        <BasicInput inputRef={inputRef} onChange={() => solve(selectedDay)} />
+        <Answer output={output} />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
